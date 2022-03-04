@@ -1,0 +1,42 @@
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.prod
+    command: gunicorn --bind 0.0.0.0:8080 manage:create_app()
+    volumes:
+      - static_volume:/home/app/web/src/static
+    expose:
+      - 5000
+    environment:
+      - FLASK_APP=project/__init__.py
+      - FLASK_ENV=production
+      - APP_FOLDER=/home/app/web
+      - DATABASE=postgres
+      - DATABASE_URL=postgresql://my_stuff:my_stuff@db:5432/my_stuff_prod
+      - SQL_HOST=db
+      - SQL_PORT=5432
+    depends_on:
+      - db
+
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=my_stuff_prod
+      - POSTGRES_USER=my_stuff
+      - POSTGRES_PASSWORD=my_stuff
+
+  nginx:
+    build: ./services/nginx
+    volumes:
+      - static_volume:/var/www/static
+    ports:
+      - 8000:80
+    depends_on:
+      - web
+
+volumes:
+  postgres_data:
+  static_volume:

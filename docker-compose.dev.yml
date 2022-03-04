@@ -1,0 +1,32 @@
+services:
+  web:
+    build:
+      context: ./services/web
+      dockerfile: Dockerfile.dev
+    command: python manage.py run -h 0.0.0.0
+    volumes:
+      - ./services/web/:/usr/src/app/
+    ports:
+      - 5000:5000
+    environment:
+      - FLASK_APP=project/__init__.py
+      - FLASK_ENV=development
+      - APP_FOLDER=/usr/src/app
+      - DATABASE=postgres
+      - DATABASE_URL=postgresql://my_stuff:my_stuff@db:5432/my_stuff_dev
+      - SQL_HOST=db
+      - SQL_PORT=5432
+      
+    depends_on:
+      - db
+  db:
+    image: postgres:12-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_DB=my_stuff_dev
+      - POSTGRES_USER=my_stuff
+      - POSTGRES_PASSWORD=my_stuff
+
+volumes:
+  postgres_data:

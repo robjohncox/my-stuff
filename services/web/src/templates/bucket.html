@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<p>{{ bucket.description }}</p>
+<table class="row-borders">
+    <thead>
+        <tr class="header">
+            <th>
+                <a class="icon-link" href="/bucket/{{ bucket.id }}/update">&#9998;</a>
+            </th>
+            <th>Item</th>
+            <th>Due</th>
+            <th>&nbsp;</th>
+        </th>
+    </thead>
+    <tbody>
+        {% for item in bucket.incomplete_items %}
+        <tr class="top-align {% if item.is_overdue %}overdue{% elif item.flagged %}flagged{% else %}unflagged{% endif %}">
+            <td class="min">
+                <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/update">&#9998;</a>
+                |
+                <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/delete">&#9249;</a>
+                |
+                {% if item.flagged %}
+                    <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/unflag">&#9872;</a>
+                {% else %}
+                    <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/flag">&#9873;</a>
+                {% endif %}
+                |
+                <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/complete">&#10004;</a>
+            </td>
+            <td>{{ item.title }}{% if item.description %}<br/><span class="muted">{{ item.description }}</span>{% endif %}</td>
+            <td class="min">{% if item.due_date %}{{ item.due_date_human }}{% endif %}</td>
+            <td class="min">
+                <a class="icon-link" href="/bucket/{{ bucket.id }}/item/{{ item.id }}/due_date_plus_one_day">+1</a>
+            </td>
+        </tr>
+        {% endfor %}
+        <tr class="footer">
+            <td class="min">
+                <a href="/bucket/{{ bucket.id }}/item/create">Create item</a>
+            </td>
+            <td colspan="3">
+                <form action="" method="POST" novalidate="novalidate">
+                    {{ form.hidden_tag() }}
+                    {{ form.title(size=48) }}
+                    {{ form.submit() }}
+                    {% for error in form.title.errors %}
+                    <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </form>
+            </td>
+        </tr>
+    </tbody>
+</table>
+
+<script type="text/javascript">
+    // When the page loads, we focus on the title being entered into the "quick
+    // add item" input, and select any text that is there.
+    window.onload = function () {
+        var input = document.getElementById('title');
+        input.focus();
+        input.select();
+    }
+</script>
+{% endblock %}

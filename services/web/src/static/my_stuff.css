@@ -1,0 +1,61 @@
+table.row-borders {
+    border-top: 1px solid #999999;
+    border-collapse: collapse;
+    width: 100%;
+}
+
+table.row-borders tr {
+    border-bottom: 1px solid #999999;
+}
+
+table.row-borders tr td:first-child {
+    border-left: 1px solid #999999;
+}
+
+table.row-borders tr td:last-child {
+    border-right: 1px solid #999999;
+}
+
+tr.top-align td {
+    vertical-align: top;
+}
+
+tr.header, tr.footer {
+    background-color: #eeeeee;
+    border: 1px solid #999999;
+}
+
+th {
+    text-align: left;    
+}
+
+th,td {
+    padding: 3px 10px 3px 5px;
+}
+
+td.min {
+    width: 1%;
+    white-space: nowrap;
+}
+
+a.icon-link {
+    text-decoration: none;
+    font-weight: 200;
+}
+
+.flagged {
+    background-color: #fed8b1;
+}
+
+.overdue {
+    background-color: #ffcccc;
+}
+
+.error {
+    color: red;
+}
+
+.muted {
+    color: #666666;
+    font-size: 0.8em;
+}

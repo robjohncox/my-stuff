@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<form action="" method="POST" novalidate="novalidate">
+    {{ form.hidden_tag() }}
+    <table>
+        <tbody>
+            <tr class="top-align">
+                <td class="min">{{ form.title.label }}</td>
+                <td class="min">{{ form.title(size=60) }}</td>
+                <td>
+                    {% for error in form.title.errors %}
+                    <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr class="top-align">
+                <td class="min">{{ form.description.label }}</td>
+                <td class="min">{{ form.description(cols=48, rows=2) }}</td>
+                <td>
+                    {% for error in form.description.errors %}
+                    <span class="error">{{ error }}</span>
+                    {% endfor %}
+                </td>
+            </tr>
+            <tr class="top-align">
+                <td class="min">&nbsp;</td>
+                <td class="min">{{ form.submit() }}</td>
+            </tr>
+        </tbody>
+    </table>
+</form>
+
+<script type="text/javascript">
+    // When the page loads, we focus on the title being entered. It would be better if
+    // this focused on the first field with an error though, and fell back to title.
+    window.onload = function () {
+        var input = document.getElementById('title');
+        input.focus();
+        input.select();
+    }
+</script>
+{% endblock %}

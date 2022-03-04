@@ -1,0 +1,68 @@
+###########
+# BUILDER #
+###########
+
+# pull official base image
+FROM python:3.8.4-slim-buster as builder
+
+# set work directory
+WORKDIR /usr/src/app
+
+# set environment variables
+ENV PYTHONDONTWRITEBYTECODE 1
+ENV PYTHONUNBUFFERED 1
+
+# install system dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends gcc
+
+# copy application code
+RUN pip install --upgrade pip
+COPY . /usr/src/app/
+
+# format code
+RUN pip install black
+RUN black .
+
+# lint
+RUN pip install flake8
+RUN flake8 --config=pyproject.toml .
+
+# create dependency wheels
+COPY ./requirements.txt .
+RUN pip wheel --no-cache-dir --no-deps --wheel-dir /usr/src/app/wheels -r requirements.txt
+
+# install dependencies
+RUN pip install --no-cache /usr/src/app/wheels/*
+
+# test
+RUN pip install pytest
+RUN pytest .
+
+#########
+# FINAL #
+#########
+
+# pull official base image
+FROM python:3.8.4-slim-buster
+
+# create the app user
+RUN addgroup --system app && adduser --system app
+ENV HOME=/home/app
+RUN chown app:app $HOME
+
+# create the app home directory
+ENV APP_HOME=/home/app/web
+RUN mkdir $APP_HOME
+WORKDIR $APP_HOME
+COPY . $APP_HOME
+RUN chown -R app:app $APP_HOME
+
+# install the app dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends netcat
+COPY --from=builder /usr/src/app/wheels /home/app/wheels
+RUN pip install --no-cache --upgrade pip
+RUN pip install --no-cache /home/app/wheels/*
+
+# run app under the app user
+USER app
+ENTRYPOINT ["/home/app/web/entrypoint.sh"]
